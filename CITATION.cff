@@ -15,7 +15,7 @@ authors:
     affiliation: "ICAR-National Soybean Research Institute"
     # orcid: "https://orcid.org/FILL"
 license: MIT
-repository-code: "https://github.com/FILL/gpfn-projection-bottleneck"
+repository-code: "https://github.com/gaurav-iitindore/gpfn-projection-bottleneck"
 preferred-citation:
   type: article
   title: "Sparse Marker Effects Expose a Projection Bottleneck in Prior-Data Fitted Networks for Genomic Prediction, Confirmed Across Two Species"

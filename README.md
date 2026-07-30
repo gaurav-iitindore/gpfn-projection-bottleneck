@@ -21,7 +21,7 @@ Two panels, four methods, 100 independent partitions each, every method evaluate
 ## Reproduce every number in the paper
 
 ```bash
-git clone https://github.com/<user>/gpfn-projection-bottleneck.git
+git clone https://github.com/gaurav-iitindore/gpfn-projection-bottleneck.git
 cd gpfn-projection-bottleneck
 pip install -r requirements.txt
 python analysis/reproduce_all_tables.py
