@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this code or these results, please cite the manuscript below."
+title: "Sparse marker effects expose a projection bottleneck in Prior-Data Fitted Networks for genomic prediction"
+authors:
+  - family-names: Tiwari
+    given-names: Gaurav
+    affiliation: "Indian Institute of Technology Indore"
+    # orcid: "https://orcid.org/FILL"
+  - family-names: Tiwari
+    given-names: Aruna
+    affiliation: "Indian Institute of Technology Indore"
+    # orcid: "https://orcid.org/FILL"
+  - family-names: Ratnaparkhe
+    given-names: Milind
+    affiliation: "ICAR-National Soybean Research Institute"
+    # orcid: "https://orcid.org/FILL"
+license: MIT
+repository-code: "https://github.com/FILL/gpfn-projection-bottleneck"
+preferred-citation:
+  type: article
+  title: "Sparse Marker Effects Expose a Projection Bottleneck in Prior-Data Fitted Networks for Genomic Prediction, Confirmed Across Two Species"
+  authors:
+    - family-names: Tiwari
+      given-names: Gaurav
+    - family-names: Tiwari
+      given-names: Aruna
+    - family-names: Ratnaparkhe
+      given-names: Milind
+  journal: "IEEE Transactions on Computational Biology and Bioinformatics"
+  year: 2026
+  # doi: FILL on acceptance

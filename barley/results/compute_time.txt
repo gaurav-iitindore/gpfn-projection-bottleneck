@@ -1,0 +1,20 @@
+Barley HEB-25 benchmark, compute time (measured from per-seed seconds columns)
+==============================================================================
+
+Total compute (sum of all seed wall-clock seconds, 4 methods x 9 targets x 100 seeds):
+  ~122.7 CPU-hours  (5.1 CPU-days)
+
+Breakdown:
+  BayesB (BGLR MCMC):                  ~101.5 CPU-hours   (83% of total)
+  R-path total (BayesB + overhead):    ~111.0 CPU-hours
+  Python methods (GPFN+GBLUP+PCR):      ~11.7 CPU-hours
+
+Wall-clock: ~1 day. 8 targets ran as parallel SLURM jobs on PARAM Siddhi-AI
+(cpup partition, account cap 8 concurrent jobs); the 9th (FT) ran after a slot freed.
+
+Per-seed timings (approximate, from the data):
+  GPFN/GBLUP/PCR:  ~40 sec/seed (shared-node, up to ~120 s under contention)
+  BayesB:          ~350-360 sec/seed on PARAM Siddhi (vs ~480-590 s on AgriHub under load)
+
+Reproducibility: seed-1 values matched to 4 decimal places between PARAM Siddhi
+and AgriHub (independent clusters, version-pinned conda environments).

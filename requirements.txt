@@ -1,0 +1,7 @@
+# Python dependencies for analysis and figure generation.
+# Versions are those used to produce the submitted results.
+numpy>=1.23,<3
+pandas>=1.5
+scipy>=1.10
+matplotlib>=3.6
+scikit-learn>=1.2
