@@ -18,6 +18,10 @@ Two panels, four methods, 100 independent partitions each, every method evaluate
 
 **Headline result.** BayesB is more accurate than GPFN in 16 of 17 soybean combinations, significant in 15 after Holm-Bonferroni correction. GPFN ranks last of four and does not exceed principal components regression, the ablation introduced by GPFN's own authors. The cost is architecture-conditional: in barley it is zero across eight polygenic grain-weight targets and large on the single oligogenic trait.
 
+### Replacing the projection at inference does not recover the loss
+
+If the fixed principal-component projection is the limitation, the obvious remedy is to swap it, at inference and without refitting the prior, for one that keeps sparse large-effect signal. On IL protein, the combination with one of the largest deficits, we replaced the released projection with four trait-aware alternatives (PLS, PLS matched to the principal-component variance profile, association-screen-then-PCA, a hybrid, and feature bagging), each fitted on the training partition only, across the same 100 partitions. None beats the released projection: screen-then-PCA comes closest at a paired deficit of 0.012 (significant after Holm-Bonferroni), the rest by more. The screened features carry the signal (a linear model reads them as well as the principal components, and GPFN on them tracks that linear control at r = 0.89), yet GPFN does not exceed what it achieves on the basis it was fitted against. See Table III in `analysis/reproduce_all_tables.py` and `soybean/figures/Fig12_projection_swap.pdf`.
+
 ## Reproduce every number in the paper
 
 ```bash
@@ -27,20 +31,28 @@ pip install -r requirements.txt
 python analysis/reproduce_all_tables.py
 ```
 
-This reads only the raw per-partition CSVs and prints Tables I to VI plus every inline statistic, in manuscript order. No intermediate summary files are used. Runtime is a few seconds.
+This reads only the raw per-partition CSVs and prints Tables I to VII plus every inline statistic, in manuscript order. No intermediate summary files are used. Runtime is a few seconds.
 
 ## Layout
 
 ```
 soybean/
   scripts/                 analysis and figure generation
+    proj_ext.py                    trait-aware projection variants
+                                   (PLS, screen-then-PCA, hybrid, bagging)
+    run_projection_evaluation.py   runs GPFN + a PCR control on byte-identical
+                                   features, one projection at a time, resumable
+    make_fig12_projection.py       regenerates Figure 12 from the raw CSV
   results/
     final_results/         17 CSVs, one per location-trait combination,
                            100 rows each, one row per partition,
                            columns: seed, n_train, n_test, and
                            {gpfn,gblup,pcr,bayesb}_{pearson,spearman}
     heritability.csv       genomic h2 per combination (REML on a VanRaden GRM)
-  figures/                 Figures 1 to 7 as vector PDF
+    projection/
+      proj_IL_2012_protein_100.csv IL protein, 100 partitions, one row per
+                                   (seed, projection): gpfn/pcr pearson+spearman
+  figures/                 Figures 1 to 7 and Figure 12 as vector PDF
 
 barley/
   scripts/                 analysis, figures, SLURM submission

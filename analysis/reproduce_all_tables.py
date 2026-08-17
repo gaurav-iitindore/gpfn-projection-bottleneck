@@ -8,10 +8,11 @@ results, with no intermediate summary files.
 Reads only:
     soybean/results/final_results/final_*.csv   (17 files, 100 rows each)
     soybean/results/heritability.csv
+    soybean/results/projection/proj_IL_2012_protein_100.csv
     barley/results/raw_results/py_*.csv         (9 files, 100 rows each)
     barley/results/raw_results/r_*.csv          (9 files, 100 rows each)
 
-Prints Tables I to VI and every inline statistic, in manuscript order.
+Prints Tables I to VII and every inline statistic, in manuscript order.
 Every value printed here should match the submitted PDF exactly.
 """
 
@@ -127,7 +128,44 @@ for a, b in [("gpfn", "gblup"), ("gpfn", "pcr"), ("gpfn", "bayesb"),
           f"{f'({lo:+.3f}, {hi:+.3f})':>24}{d:>+8.2f}{p:>12.1e}")
 
 # ----------------------------------------------------------------------------
-rule("TABLE III  BayesB versus GPFN by combination")
+rule("TABLE III  Replacing the projection at inference (IL protein, 100 partitions)")
+PROJ = os.path.join(SOY, "results", "projection", "proj_IL_2012_protein_100.csv")
+pj = pd.read_csv(PROJ)
+seeds = sorted(pj.seed.unique())
+gp = {}
+for tok in pj.projection.unique():
+    sub = pj[pj.projection == tok].set_index("seed")
+    gp[tok] = sub.loc[seeds, "gpfn_pearson"].values
+base = gp["pca"]
+# order: released pca first, then trait-aware variants best (least negative) first
+variants = ["screen_pca:2000", "pls_mm", "bag:10", "pls", "hybrid:50"]
+DISP = {"pca": "Principal components (released)", "screen_pca:2000": "Screen-then-PCA",
+        "pls_mm": "PLS, matched", "bag:10": "Bagging", "pls": "PLS", "hybrid:50": "Hybrid"}
+p_raw = []
+for tok in variants:
+    _, p = stats.ttest_rel(gp[tok], base)
+    p_raw.append(p)
+p_holm = holm(p_raw)
+print(f"{'Projection':<32}{'Mean r':>8}{'Delta':>9}{'dz':>7}{'Won':>9}{'p (Holm)':>11}")
+print(f"{DISP['pca']:<32}{base.mean():>8.3f}{'':>9}{'':>7}{'':>9}{'':>11}")
+for tok, ph in zip(variants, p_holm):
+    d = gp[tok] - base
+    won = int((d > 0).sum())
+    star = "n.s." if ph >= 0.05 else f"{ph:.1e}"
+    print(f"{DISP[tok]:<32}{gp[tok].mean():>8.3f}{d.mean():>+9.3f}"
+          f"{d.mean() / d.std(ddof=1):>7.2f}{f'{won}/{len(seeds)}':>9}{star:>11}")
+sp = gp["screen_pca:2000"]
+sp_pcr = pj[pj.projection == "screen_pca:2000"].set_index("seed").loc[seeds, "pcr_pearson"].values
+print(f"\n  Every replacement is worse than the released projection after")
+print(f"  Holm-Bonferroni across the five comparisons.")
+print(f"  Screen-then-PCA carries the signal (its PCR reads {sp_pcr.mean():.3f}, essentially")
+print(f"  the {pj[pj.projection=='pca'].pcr_pearson.mean():.3f} of the released projection), and GPFN on those")
+print(f"  features tracks that linear control at r = "
+      f"{stats.pearsonr(sp, sp_pcr)[0]:.2f} across the 100 partitions,")
+print(f"  yet does not exceed what it achieves on the components it was fitted against.")
+
+# ----------------------------------------------------------------------------
+rule("TABLE IV  BayesB versus GPFN by combination")
 rows = []
 for c in per:
     g, b = per[c]["gpfn"], per[c]["bayesb"]
@@ -154,7 +192,7 @@ print(f"  Significant after Holm-Bonferroni: {(T.p_holm < 0.05).sum()} of {len(T
 print(f"  Not significant: {', '.join(T.loc[T.p_holm >= 0.05, 'combo'])}")
 
 # ----------------------------------------------------------------------------
-rule("TABLE IV  Genomic heritability by trait")
+rule("TABLE V  Genomic heritability by trait")
 agg = H.groupby("trait").h2.agg(["count", "mean", "min", "max"])
 print(f"{'Trait':<10}{'Combinations':>14}{'Mean h2':>10}{'Range':>18}")
 for t, r in agg.iterrows():
@@ -174,7 +212,7 @@ for comp in ["gblup", "bayesb"]:
     print(f"  GPFN - {LABEL[comp]:<7} vs N:  r = {r:+.3f} (p = {p:.4f})")
 
 # ----------------------------------------------------------------------------
-rule("TABLE V  Behavioural similarity, Fisher z-averaged across 17 combinations")
+rule("TABLE VI  Behavioural similarity, Fisher z-averaged across 17 combinations")
 pair_r = {}
 for a, b in combinations(METHODS, 2):
     rs = np.array([stats.pearsonr(per[c][a], per[c][b])[0] for c in per])
@@ -185,18 +223,18 @@ for a, b in combinations(METHODS, 2):
           f"95% CI ({np.tanh(mz - 1.96 * se):.3f}, {np.tanh(mz + 1.96 * se):.3f})   "
           f"range {rs.min():.3f} to {rs.max():.3f}")
 
-gp, gb = pair_r[("gpfn", "pcr")], pair_r[("gpfn", "bayesb")]
+gp2, gb = pair_r[("gpfn", "pcr")], pair_r[("gpfn", "bayesb")]
 print("\n  Key contrast: GPFN~PCR versus GPFN~BayesB")
-print(f"    difference in mean r      {np.tanh(z(gp).mean()) - np.tanh(z(gb).mean()):+.3f}")
+print(f"    difference in mean r      {np.tanh(z(gp2).mean()) - np.tanh(z(gb).mean()):+.3f}")
 rng = np.random.default_rng(0)
-bs = [np.tanh(z(gp[i]).mean()) - np.tanh(z(gb[i]).mean())
-      for i in rng.integers(0, len(gp), (20000, len(gp)))]
+bs = [np.tanh(z(gp2[i]).mean()) - np.tanh(z(gb[i]).mean())
+      for i in rng.integers(0, len(gp2), (20000, len(gp2)))]
 print(f"    bootstrap 95% CI          ({np.percentile(bs, 2.5):+.3f}, {np.percentile(bs, 97.5):+.3f})")
-t, p = stats.ttest_rel(z(gp), z(gb))
-dz = (z(gp) - z(gb)).mean() / (z(gp) - z(gb)).std(ddof=1)
-print(f"    paired t on Fisher z      t({len(gp) - 1}) = {t:.2f}, p = {p:.1e}")
+t, p = stats.ttest_rel(z(gp2), z(gb))
+dz = (z(gp2) - z(gb)).mean() / (z(gp2) - z(gb)).std(ddof=1)
+print(f"    paired t on Fisher z      t({len(gp2) - 1}) = {t:.2f}, p = {p:.1e}")
 print(f"    paired Cohen's d          {dz:.2f}")
-print(f"    Wilcoxon signed-rank      p = {stats.wilcoxon(z(gp), z(gb))[1]:.1e}")
+print(f"    Wilcoxon signed-rank      p = {stats.wilcoxon(z(gp2), z(gb))[1]:.1e}")
 
 ps = []
 for c in per:
@@ -211,7 +249,7 @@ print(f"    after Holm-Bonferroni     significant in {(holm(ps) < 0.05).sum()}/{
 # ----------------------------------------------------------------------------
 # Barley
 # ----------------------------------------------------------------------------
-rule("TABLE VI  Barley HEB-25, BayesB versus GPFN by target")
+rule("TABLE VII  Barley HEB-25, BayesB versus GPFN by target")
 bar_files = sorted(glob.glob(os.path.join(BAR, "results", "raw_results", "py_*.csv")))
 brows, ball = [], {m: [] for m in METHODS}
 for f in bar_files:
