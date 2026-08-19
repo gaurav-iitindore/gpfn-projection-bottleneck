@@ -2,7 +2,7 @@
 
 Code, per-partition results, and figure scripts for the manuscript
 
-> G. Tiwari, A. Tiwari, M. Ratnaparkhe. *Sparse Marker Effects Expose a Projection Bottleneck in Prior-Data Fitted Networks for Genomic Prediction, Confirmed Across Two Species.* Submitted to IEEE Transactions on Computational Biology and Bioinformatics.
+> G. Tiwari, A. Tiwari. *Sparse Marker Effects Expose a Projection Bottleneck in Prior-Data Fitted Networks for Genomic Prediction, Confirmed Across Two Species.* Submitted to IEEE Transactions on Computational Biology and Bioinformatics.
 
 ## What this is
 

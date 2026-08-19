@@ -5,15 +5,11 @@ authors:
   - family-names: Tiwari
     given-names: Gaurav
     affiliation: "Indian Institute of Technology Indore"
-    # orcid: "https://orcid.org/FILL"
+    orcid: "https://orcid.org/0009-0005-7847-9271"
   - family-names: Tiwari
     given-names: Aruna
     affiliation: "Indian Institute of Technology Indore"
-    # orcid: "https://orcid.org/FILL"
-  - family-names: Ratnaparkhe
-    given-names: Milind
-    affiliation: "ICAR-National Soybean Research Institute"
-    # orcid: "https://orcid.org/FILL"
+    orcid: "https://orcid.org/0000-0002-0394-0327"
 license: MIT
 repository-code: "https://github.com/gaurav-iitindore/gpfn-projection-bottleneck"
 preferred-citation:
@@ -22,10 +18,10 @@ preferred-citation:
   authors:
     - family-names: Tiwari
       given-names: Gaurav
+      orcid: "https://orcid.org/0009-0005-7847-9271"
     - family-names: Tiwari
       given-names: Aruna
-    - family-names: Ratnaparkhe
-      given-names: Milind
+      orcid: "https://orcid.org/0000-0002-0394-0327"
   journal: "IEEE Transactions on Computational Biology and Bioinformatics"
   year: 2026
   # doi: FILL on acceptance
