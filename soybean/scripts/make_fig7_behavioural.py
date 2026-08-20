@@ -4,6 +4,7 @@ from scipy import stats
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as pe
 from matplotlib.lines import Line2D
 
 plt.rcParams.update({'font.family':'sans-serif','font.sans-serif':['DejaVu Sans'],
@@ -37,10 +38,10 @@ ax.set_xticklabels([LAB[k] for k in METHODS], fontsize=8.5)
 ax.set_yticklabels([LAB[k] for k in METHODS], fontsize=8.5)
 for i in range(4):
     for j in range(4):
-        col = 'white' if (M[i,j] > .72 or M[i,j] < .18) else '#222222'
         txt = '1' if i==j else f'{M[i,j]:.2f}'
         ax.text(j, i, txt, ha='center', va='center', fontsize=9,
-                color=col, weight='bold' if i!=j else 'normal')
+                color='#222222', weight='bold' if i!=j else 'normal',
+                path_effects=[pe.withStroke(linewidth=1.2, foreground='white')])
 # outline the structure cluster
 from matplotlib.patches import Rectangle
 ax.add_patch(Rectangle((-.5,-.5), 3, 3, fill=False, edgecolor='#222222', lw=2.0, zorder=5))
